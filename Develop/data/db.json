@@ -1,0 +1,17 @@
+{
+    "notes": [
+        {
+            "title": "Test Title",
+            "text": "Test text"
+        },
+        {   "title": "Shopping",
+            "text": "Go To Shoprite"
+        },
+        {   "title": "Make Dinner",
+            "text": "Lasagna"
+        },
+        {   "title": "Clean Up",
+            "text": "Do Dishes"
+        }
+    ]
+}    
