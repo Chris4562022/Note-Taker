@@ -9,6 +9,7 @@ const path = require('path');
 app.use(express.urlencoded({ extended: true }));
 // parse incoming JSON data
 app.use(express.json());
+app.use(express.static('public'));
 
 
 const { notes } = require('./Develop/data/db.json');
@@ -97,6 +98,18 @@ app.post('/api/notes', (req, res) => {
 });
 
 
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, './Develop/public/index.html'));
+});
+
+app.get('/notes', (req, res) => {
+  res.sendFile(path.join(__dirname, './Develop/public/notes.html'));
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, './Develop/public/index.html'));
+});
 
 app.listen(PORT, () => {
   console.log(`API server now on port ${PORT}!`);
