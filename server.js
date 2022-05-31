@@ -1,6 +1,15 @@
 const express = require('express');
 const PORT = process.env.PORT || 3001;
 const app = express();
+const { v4: uuidv4 } = require('uuid');
+const fs = require('fs');
+const path = require('path');
+
+// parse incoming string or array data
+app.use(express.urlencoded({ extended: true }));
+// parse incoming JSON data
+app.use(express.json());
+
 
 const { notes } = require('./Develop/data/db.json');
 
@@ -23,12 +32,39 @@ function findById(id, notesArray) {
   return result;
 }
 
+function createNewNote(body, notesArray) {
+  const note = body;
+  notesArray.push(note);
+  fs.writeFileSync(
+    path.join(__dirname, './Develop/data/db.json'),
+    JSON.stringify({notes: notesArray }, null, 2)
+  );
 
+  // return finished code to post route for response
+  return note;
+}
+
+
+function validateNote(note) {
+  if (!note.title || typeof note.title !== 'string') {
+    return false;
+  }
+  if (!note.text || typeof note.text !== 'string') {
+    return false;
+  }
+  // if (!animal.diet || typeof animal.diet !== 'string') {
+  //   return false;
+  // }
+  // if (!animal.personalityTraits || !Array.isArray(animal.personalityTraits)) {
+  //   return false;
+  // }
+  return true;
+}
 
 app.get('/api/notes', (req, res) => {
   let results = notes;
   if (req.query) {
-    results = filterByQuery(req.query,results);
+    results = filterByQuery(req.query, results);
   }
   res.json(results);
 });
@@ -40,6 +76,23 @@ app.get('/api/notes/:id', (req, res) => {
 
   } else {
     res.json(404);
+  }
+});
+
+
+
+app.post('/api/notes', (req, res) => {
+  // req.body is where our incoming content will be
+  // set id based on what the next index of the array will be
+  req.body.id = uuidv4().toString();
+  //add animal to jsonn file and animals array in this function 
+  const note = createNewNote(req.body, notes);
+  //if any data in req.body is incorrect, sent 400 error back
+  if (!validateNote(req.body)) {
+    res.status(400).send('The Note is not properly formatted.');
+  } else {
+    const note = createNewNote(req.body, notes);
+    res.json(note);
   }
 });
 
